@@ -1,4 +1,6 @@
-# CSRF-to-XSS-to-Cookie-Leak-pwn.college-pwnpost-
+# CSRF to XSS to Cookie Leak (pwn.college "pwnpost")
+
+## Description
 The "pwnpost" Flask application has a Reflected XSS vulnerability in the /ephemeral endpoint. Because the application lacks CSRF protection, an attacker can force an authenticated admin bot to visit a malicious page. This page redirects the bot to the vulnerable endpoint, which executes JavaScript to steal the admin's auth cookie.
 The cookie contains the admin's username and password in plaintext, allowing full account takeover and access to the hidden flag.
 Impact
@@ -24,6 +26,7 @@ python3 -m http.server 1337 > server.log 2>&1 &
 
 Create index.html in the directory served by the attacker's server. The script dynamically builds an XSS payload, encodes it, and redirects the bot to the vulnerable endpoint.
 
+```html
 <!DOCTYPE html>
 <html>
 <body>
@@ -41,11 +44,12 @@ Create index.html in the directory served by the attacker's server. The script d
     </script>
 </body>
 </html>
-
+```
 
 3. Trigger the Bot
 
 Submit the URL http://hacker.localhost:1337 to the admin bot (via the challenge interface).
+
 4. Capture the Cookie
 
 The bot visits the page, gets redirected to the vulnerable endpoint, and the reflected XSS executes. The bot's cookie is sent to the attacker's server via a GET request. Check server.log:
@@ -79,9 +83,9 @@ The vulnerability is a combination of three flaws:
 
     Reflected XSS in /ephemeral: The endpoint reflects the msg parameter directly into the HTML without escaping.
 
-
+```python
     The message: {flask.request.args.get("msg", "(none)")}
-
+```
 
     No CSRF Protection: The application does not validate Origin or Referer headers. An attacker can force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
 
@@ -92,10 +96,10 @@ Remediation
 
     Escape Output: Use markupsafe.escape to sanitize the msg parameter.
 
-
+```python
 from markupsafe import escape
 The message: {escape(flask.request.args.get("msg", "(none)"))}
-
+```
     Implement CSRF Protection: Add CSRF tokens to all state-changing requests and validate Origin/Referer headers.
 
     Secure Cookie Handling:
@@ -122,11 +126,9 @@ Lessons Learned
 
 References
 
-    OWASP: Cross Site Scripting (XSS)
-
-    OWASP: Cross-Site Request Forgery (CSRF)
-    
-    PortSwigger: Reflected XSS
+- [OWASP: Cross Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/)
+- [OWASP: Cross-Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf)
+- [PortSwigger: Reflected XSS](https://portswigger.net/web-security/cross-site-scripting/reflected)
 This response is AI-generated, for reference only.
 
 
