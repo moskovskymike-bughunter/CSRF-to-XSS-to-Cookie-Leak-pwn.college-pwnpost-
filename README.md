@@ -89,9 +89,9 @@ The vulnerability is a combination of three flaws:
     The message: {flask.request.args.get("msg", "(none)")}
 ```
 
-**No CSRF Protection: The application does not validate Origin or Referer headers. An attacker can force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
+2. **No CSRF Protection**: The application does not validate Origin or Referer headers. An attacker can force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
 
-**Insecure Cookie Storage: The auth cookie stores the username and password in plaintext (username|password), and it is not marked as HttpOnly. This allows JavaScript to read and exfiltrate it.
+3. **Insecure Cookie Storage**: The auth cookie stores the username and password in plaintext (username|password), and it is not marked as HttpOnly. This allows JavaScript to read and exfiltrate it.
 
 
 ## Remediation
