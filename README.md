@@ -1,23 +1,25 @@
 # CSRF to XSS to Cookie Leak (pwn.college "pwnpost")
 
 ## Description
-The "pwnpost" Flask application has a Reflected XSS vulnerability in the /ephemeral endpoint. Because the application lacks CSRF protection, an attacker can force an authenticated admin bot to visit a malicious page. This page redirects the bot to the vulnerable endpoint, which executes JavaScript to steal the admin's auth cookie.
-The cookie contains the admin's username and password in plaintext, allowing full account takeover and access to the hidden flag.
-Impact
 
-Critical. An attacker can steal the admin's credentials in plaintext, leading to:
+The "pwnpost" Flask application has a Reflected XSS vulnerability in the `/ephemeral` endpoint. Because the application lacks CSRF protection, an attacker can force an authenticated admin bot to visit a malicious page. This page redirects the bot to the vulnerable endpoint, which executes JavaScript to steal the admin's `auth` cookie. The cookie contains the admin's username and password in plaintext, allowing full account takeover and access to the hidden flag.
 
-    Full Account Takeover: The auth cookie stores username|password. An attacker can log in as the admin and access all private data (including the hidden flag).
+## Impact
 
-    Session Hijacking: The stolen cookie can be used directly to bypass authentication.
+**Critical.** An attacker can steal the admin's credentials in plaintext, leading to:
 
-    Data Exfiltration: The attacker can read drafts and private posts that are hidden from regular users.
+- **Full Account Takeover:** The `auth` cookie stores `username|password`. An attacker can log in as the admin and access all private data (including the hidden flag).
+- **Session Hijacking:** The stolen cookie can be used directly to bypass authentication.
+- **Data Exfiltration:** The attacker can read drafts and private posts that are hidden from regular users.
 
-Reproduction Steps
-1. Preparation
+## Reproduction Steps
+
+### 1. Preparation
 
 Start the vulnerable server:
+```bash
 ./challenge/server &
+```
 
 Start the attacker's HTTP server:
 python3 -m http.server 1337 > server.log 2>&1 &
