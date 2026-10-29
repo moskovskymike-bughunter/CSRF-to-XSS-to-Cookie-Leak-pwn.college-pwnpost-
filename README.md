@@ -96,15 +96,15 @@ The vulnerability is a combination of three flaws:
 
 ## Remediation
 
-**Escape Output: Use markupsafe.escape to sanitize the msg parameter.
+Escape Output: Use markupsafe.escape to sanitize the msg parameter.
 
 ```python
 from markupsafe import escape
 The message: {escape(flask.request.args.get("msg", "(none)"))}
 ```
-**Implement CSRF Protection: Add CSRF tokens to all state-changing requests and validate Origin/Referer headers.
+Implement CSRF Protection: Add CSRF tokens to all state-changing requests and validate Origin/Referer headers.
 
-**Secure Cookie Handling:
+Secure Cookie Handling:
 
 Never store passwords in cookies.
 
