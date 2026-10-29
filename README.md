@@ -83,13 +83,13 @@ curl -L -b "auth=admin|.QX5kzMzwyMwEDN2EzW}" http://challenge.localhost/ | grep 
 
 The vulnerability is a combination of three flaws:
 
-    Reflected XSS in /ephemeral: The endpoint reflects the msg parameter directly into the HTML without escaping.
+    1. **Reflected XSS in `/ephemeral`:** The endpoint reflects the `msg` parameter directly into the HTML without escaping.
 
 ```python
     The message: {flask.request.args.get("msg", "(none)")}
 ```
 
-    No CSRF Protection: The application does not validate Origin or Referer headers. An attacker can force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
+    **No CSRF Protection: The application does not validate Origin or Referer headers. An attacker can force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
 
 Insecure Cookie Storage: The auth cookie stores the username and password in plaintext (username|password), and it is not marked as HttpOnly. This allows JavaScript to read and exfiltrate it.
 
