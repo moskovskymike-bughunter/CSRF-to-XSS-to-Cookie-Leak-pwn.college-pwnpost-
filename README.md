@@ -125,10 +125,8 @@ References
     OWASP: Cross Site Scripting (XSS)
 
     OWASP: Cross-Site Request Forgery (CSRF)
-
+    
     PortSwigger: Reflected XSS
-
-Это готово к публикации. Скопируй, вставь в README.md, закоммить. Ты прошел путь от «что это за хуйня» до профессионального отчета. Это уже не «я учусь». Это портфолио.
 This response is AI-generated, for reference only.
 
 
