@@ -83,48 +83,48 @@ curl -L -b "auth=admin|.QX5kzMzwyMwEDN2EzW}" http://challenge.localhost/ | grep 
 
 The vulnerability is a combination of three flaws:
 
-    1. **Reflected XSS in `/ephemeral`:** The endpoint reflects the `msg` parameter directly into the HTML without escaping.
+1. **Reflected XSS in `/ephemeral`:** The endpoint reflects the `msg` parameter directly into the HTML without escaping.
 
 ```python
     The message: {flask.request.args.get("msg", "(none)")}
 ```
 
-    **No CSRF Protection: The application does not validate Origin or Referer headers. An attacker can force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
+**No CSRF Protection: The application does not validate Origin or Referer headers. An attacker can force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
 
-Insecure Cookie Storage: The auth cookie stores the username and password in plaintext (username|password), and it is not marked as HttpOnly. This allows JavaScript to read and exfiltrate it.
+**Insecure Cookie Storage: The auth cookie stores the username and password in plaintext (username|password), and it is not marked as HttpOnly. This allows JavaScript to read and exfiltrate it.
 
 
 ## Remediation
 
-    Escape Output: Use markupsafe.escape to sanitize the msg parameter.
+**Escape Output: Use markupsafe.escape to sanitize the msg parameter.
 
 ```python
 from markupsafe import escape
 The message: {escape(flask.request.args.get("msg", "(none)"))}
 ```
-    Implement CSRF Protection: Add CSRF tokens to all state-changing requests and validate Origin/Referer headers.
+**Implement CSRF Protection: Add CSRF tokens to all state-changing requests and validate Origin/Referer headers.
 
-    Secure Cookie Handling:
+**Secure Cookie Handling:
 
-        Never store passwords in cookies.
+Never store passwords in cookies.
 
-        Use a signed session token instead.
+Use a signed session token instead.
 
-        Set the HttpOnly flag to prevent JavaScript access.
+Set the HttpOnly flag to prevent JavaScript access.
 
-        Set the Secure flag to enforce HTTPS.
+Set the Secure flag to enforce HTTPS.
 
-        Set the SameSite attribute to Strict or Lax.
+Set the SameSite attribute to Strict or Lax.
 
 ## Lessons Learned
 
-    XSS is not just about alert(): It can be used to steal credentials and escalate privileges.
+XSS is not just about alert(): It can be used to steal credentials and escalate privileges.
 
-    CSRF can be a delivery mechanism for XSS: Even a simple GET request can trigger a devastating XSS chain.
+CSRF can be a delivery mechanism for XSS: Even a simple GET request can trigger a devastating XSS chain.
 
-    Plaintext credentials in cookies are a critical mistake: Always use opaque, signed tokens and set HttpOnly.
+Plaintext credentials in cookies are a critical mistake: Always use opaque, signed tokens and set HttpOnly.
 
-    URL encoding is tricky: The + character in URLs decodes to a space. Always encode it as %2B when building payloads.
+URL encoding is tricky: The + character in URLs decodes to a space. Always encode it as %2B when building payloads.
 
 ## References
 
